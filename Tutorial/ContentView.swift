@@ -11,8 +11,6 @@ struct ContentView: View {
     
     var emojis = ["🏎","🚕","🚙","🚖", "🚴‍♀️", "🚓", "✈️", "🚘", "🛩", "🚤", "🚢"]
     @State var emojiCount = 10
-    
-     
         
     var body: some View {
         VStack{
@@ -25,33 +23,9 @@ struct ContentView: View {
             }
             Spacer()
             HStack {
-                add
                 Spacer()
-                remove
 
             }.padding(.horizontal, 100)
-        }
-    }
-    
-    var remove : some View {
-        Button {
-            emojiCount = max(0, emojiCount - 1)
-        } label: {
-            VStack {
-                Text("Remove")
-                Text("Emoji")
-            }.font(.largeTitle).padding(.horizontal)
-        }
-    }
-    
-    var add : some View {
-        Button {
-            emojiCount = min(emojiCount + 1, emojis.count - 1)
-        } label: {
-            VStack {
-                Text("Add")
-                Text("Emoji")
-            }.font(.largeTitle)
         }
     }
 }
