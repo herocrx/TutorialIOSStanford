@@ -9,49 +9,39 @@ import SwiftUI
 
 struct ContentView: View {
     
-    var emojis = ["🏎","🚕","🚙","🚖", "🚴‍♀️", "🚓", "✈️", "🚘", "🛩", "🚤", "🚢"]
-    @State var emojiCount = 10
-        
+    @ObservedObject var viewModel : EmojiMemoryGame
+    
     var body: some View {
-        VStack{
-            ScrollView{
+            ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 230))]) {
-                    ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
-                        CardView(content: emoji, isFaceUp: true).aspectRatio(2/3, contentMode: .fit)
+                    ForEach(viewModel.cards) { card in
+                        CardView(card: card)
+                            .aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                // user intent to select the card
+                                viewModel.choose(card)
+                            }
                     }
                 }
-            }
-            Spacer()
-            HStack {
-                Spacer()
-
             }.padding(.horizontal, 100)
-        }
     }
 }
 
 struct CardView : View {
-    let content : String
-    @State var isFaceUp : Bool // any let in the struct cannot change, it is not a boolean but it is a POINTER to the boolean!!!!!!
-    // temporary state, in the middle of the drag
-    // the ui is constanty rebuilt!
-    // logic decided how it should look like!
-    
+    let card : MemoryGame<String>.Card // tiny slice of the model
     
     var body : some View {
         ZStack { // <--- content arguemnt to the ZStack
             let shape = RoundedRectangle(cornerRadius: Constants.roundedRectangleSize); // zstack can have the variables conditions!
             //let shape = Circle()
-            if isFaceUp {
+            if card.isFaceUp {
                 shape.fill(.white).padding(25.0)
                 shape.strokeBorder(lineWidth: 20).padding(25.0).foregroundColor(.red)
-                Text(content).font(.system(size:100))
+                Text(card.content).font(.system(size:100))
             }
             else {
                 shape.fill(.red).padding(25.0)
             }
-        }.onTapGesture {
-            isFaceUp = !isFaceUp
         }
     }
     
@@ -63,6 +53,8 @@ struct CardView : View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        let game = EmojiMemoryGame()
+        ContentView(viewModel: game).preferredColorScheme(.dark)
+        ContentView(viewModel: game).preferredColorScheme(.light)
     }
 }
