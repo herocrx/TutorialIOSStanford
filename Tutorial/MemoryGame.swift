@@ -15,9 +15,18 @@ struct MemoryGame<CardContent> {
         
     }
     
+    init(numberOfPairsOfCards : Int, createCardContent: (Int) -> CardContent) {
+        cards = [Card]()
+        for pairIndex in 0..<numberOfPairsOfCards {
+            let content : CardContent = createCardContent(pairIndex)
+            cards.append(Card(content: content))
+            cards.append(Card(content: content))
+        }
+    }
+    
     struct Card { // nesting
-        var isFaceUp : Bool
-        var isMatched : Bool
+        var isFaceUp : Bool = false
+        var isMatched : Bool = false
         let content : CardContent
     }
 }
