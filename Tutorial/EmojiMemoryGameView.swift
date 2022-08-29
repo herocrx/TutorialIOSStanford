@@ -7,19 +7,19 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct EmojiMemoryGameView: View {
     
-    @ObservedObject var viewModel : EmojiMemoryGame
+    @ObservedObject var game : EmojiMemoryGame
     
     var body: some View {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 230))]) {
-                    ForEach(viewModel.cards) { card in
-                        CardView(card: card)
+                    ForEach(game.cards) { card in
+                        CardView(card)
                             .aspectRatio(2/3, contentMode: .fit)
                             .onTapGesture {
                                 // user intent to select the card
-                                viewModel.choose(card)
+                                game.choose(card)
                             }
                     }
                 }
@@ -28,7 +28,11 @@ struct ContentView: View {
 }
 
 struct CardView : View {
-    let card : MemoryGame<String>.Card // tiny slice of the model
+    private let card : MemoryGame<String>.Card // tiny slice of the model
+    
+    init(_ card: MemoryGame<String>.Card) {
+        self.card = card
+    }
     
     var body : some View {
         ZStack { // <--- content arguemnt to the ZStack
@@ -38,6 +42,9 @@ struct CardView : View {
                 shape.fill(.white).padding(25.0)
                 shape.strokeBorder(lineWidth: 20).padding(25.0).foregroundColor(.red)
                 Text(card.content).font(.system(size:100))
+            }
+            else if card.isMatched {
+                shape.opacity(0.0)
             }
             else {
                 shape.fill(.red).padding(25.0)
@@ -54,7 +61,7 @@ struct CardView : View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        ContentView(viewModel: game).preferredColorScheme(.dark)
-        ContentView(viewModel: game).preferredColorScheme(.light)
+        EmojiMemoryGameView(game: game).preferredColorScheme(.dark)
+        EmojiMemoryGameView(game: game).preferredColorScheme(.light)
     }
 }

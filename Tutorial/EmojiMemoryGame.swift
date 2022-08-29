@@ -14,19 +14,21 @@ import SwiftUI
 // ObservableObject publishes!
 class EmojiMemoryGame : ObservableObject {
     
+    typealias Card = MemoryGame<String>.Card
+    
     //type variable!!
     //type function!!
     private static let emojis = ["🏎","🚕","🚙","🚖", "🚴‍♀️", "🚓", "✈️", "🚘", "🛩", "🚤", "🚢"]
     
     @Published private(set) var model = MemoryGame<String>(numberOfPairsOfCards: 5) { pairIndex in emojis[pairIndex] } // gatekeeper only the view model itself can see the model because 'private'
 
-    var cards : Array<MemoryGame<String>.Card> {
+    var cards : Array<Card> {
         return model.cards
     }
     
     // MARK: - Intent(s)
     
-    func choose(_ card : MemoryGame<String>.Card) {
+    func choose(_ card : Card) {
         model.choose(card)
     }
     
