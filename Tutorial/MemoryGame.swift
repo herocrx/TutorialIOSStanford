@@ -7,24 +7,38 @@
 
 import Foundation
 
-struct MemoryGame<CardContent> {
+struct MemoryGame<CardContent> where CardContent:Equatable {
     var cards : [Card]
     
+    var selectedCard : Card? = nil
+    
     mutating func choose(_ card: Card) {
-        let chosenIndex = index(of: card)
-        //var chosenCard = cards[chosenIndex] // this is still getting copy!
-        cards[chosenIndex].isFaceUp.toggle()
-        print("chosenCard \(cards)")
+        if let chosenIndex = index(of: card), !card.isMatched {
+            if let sCard = selectedCard {
+                if sCard.content == cards[chosenIndex].content {
+                    cards[chosenIndex].isMatched = true;
+                    cards[index(of: sCard)!].isMatched = true;
+                }
+                selectedCard = nil
+            }
+            else {
+                selectedCard = card
+                for aCard in cards {
+                    if !aCard.isMatched {
+                        cards[index(of: aCard)!].isFaceUp = false
+                    }
+                }
+            }
+            cards[chosenIndex].isFaceUp.toggle()
+        }
+        
+        print("\(cards)")
     }
     
-    func index(of card:Card) -> Int {
-        guard let index = cards.firstIndex(where: { deckCard in
-            card.id == deckCard.id
-        }) else {
-            return -1
-        }
-        return index
+    func index(of card:Card) -> Int? {
+        cards.firstIndex {$0.id == card.id}
     }
+    
     
     init(numberOfPairsOfCards : Int, createCardContent: (Int) -> CardContent) {
         cards = [Card]()
