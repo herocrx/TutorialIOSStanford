@@ -10,27 +10,27 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent:Equatable {
     var cards : [Card]
     
+    var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get { cards.indices.filter({ cards[$0].isFaceUp == true }).oneAndOnly}
+        set { cards.indices.forEach({ cards[$0].isFaceUp = $0 == newValue })}
+    }
+    
     var selectedCard : Card? = nil
     
     mutating func choose(_ card: Card) {
-        if let chosenIndex = index(of: card), !card.isMatched, !card.isFaceUp {
-            if let sCard = selectedCard {
-                if sCard.content == cards[chosenIndex].content {
-                    cards[chosenIndex].isMatched = true;
-                    cards[index(of: sCard)!].isMatched = true;
+        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),
+           !cards[chosenIndex].isFaceUp,
+           !cards[chosenIndex].isMatched {
+            if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard {
+                if cards[chosenIndex].content == cards[potentialMatchIndex].content {
+                    cards[chosenIndex].isMatched = true
+                    cards[potentialMatchIndex].isMatched = true
                 }
-                selectedCard = nil
+                cards[chosenIndex].isFaceUp = true
+            } else {
+                indexOfTheOneAndOnlyFaceUpCard = chosenIndex
             }
-            else {
-                selectedCard = card
-                for aCard in cards {
-                    cards[index(of: aCard)!].isFaceUp = false
-                }
-            }
-            cards[chosenIndex].isFaceUp.toggle()
         }
-        
-        print("\(cards)")
     }
     
     func index(of card:Card) -> Int? {
@@ -57,3 +57,16 @@ struct MemoryGame<CardContent> where CardContent:Equatable {
     
     
 }
+
+extension Array {
+    
+    var oneAndOnly : Element? {
+        if self.count == 1 {
+            return first
+        }
+        else {
+            return nil
+        }
+    }
+}
+
