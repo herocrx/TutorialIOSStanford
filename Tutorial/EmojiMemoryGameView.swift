@@ -31,24 +31,29 @@ struct CardView : View {
     let card : MemoryGame<String>.Card // tiny slice of the model
     
     var body : some View {
-        ZStack { // <--- content arguemnt to the ZStack
-            let shape = RoundedRectangle(cornerRadius: Constants.roundedRectangleSize); // zstack can have the variables conditions!
-            //let shape = Circle()
-            if card.isFaceUp {
-                shape.fill(.white).padding(25.0)
-                shape.strokeBorder(lineWidth: 20).padding(25.0).foregroundColor(.red)
-                Text(card.content).font(.system(size:100))
+        GeometryReader(content: { geometry in
+            let minLength = min(geometry.size.width, geometry.size.height)
+            ZStack { // <--- content arguemnt to the ZStack
+                let shape = RoundedRectangle(cornerRadius: Constants.roundedRectangleSize); // zstack can have the variables conditions!
+                //let shape = Circle()
+                if card.isFaceUp {
+                    shape.fill(.white).padding(Constants.shapePadding)
+                    shape.strokeBorder(lineWidth: Constants.strokeLineBorder).padding(Constants.shapePadding).foregroundColor(.red)
+                    Text(card.content).font(.system(size:minLength * 0.85))
+                }
+                else if card.isMatched {
+                    shape.opacity(0.0)
+                }
+                else {
+                    shape.fill(.red).padding(Constants.shapePadding)
+                }
             }
-            else if card.isMatched {
-                shape.opacity(0.0)
-            }
-            else {
-                shape.fill(.red).padding(25.0)
-            }
-        }
-    }
-    
+        })
+     }
+
     struct Constants {
+        static let strokeLineBorder = 20.0
+        static let shapePadding = 25.0
         static let roundedRectangleSize : CGFloat = 25.0
     }
     
